@@ -2,10 +2,14 @@ import numpy as np
 
 
 def find_j_k(N_k_0, d_k):
+    mini = 1
+    res = -1
     for i in range(len(N_k_0)):
-        if (d_k[N_k_0[i]] < 0):
-            return N_k_0[i]
-    return -1
+        if d_k[N_k_0[i]] < 0:
+            if mini != min(mini, d_k[N_k_0[i]]):
+                mini = min(mini, d_k[N_k_0[i]])
+                res = N_k_0[i]
+    return res
 
 
 # начальные данные
@@ -46,7 +50,7 @@ while (1):
         sol = x
         break
     else:
-        j_k = find_j_k(Lk, d_Lk) #возвращает номер первого отрицательного
+        j_k = find_j_k(Lk, d_Lk) #возвращает самый отрицательный
         u_Nk = np.array([])
         u_Nk =np.append(u_Nk, np.transpose(Bk * np.matrix(np.transpose([A[j_k]]))))
         u_k = np.zeros(9)
