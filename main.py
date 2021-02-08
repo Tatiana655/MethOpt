@@ -73,7 +73,7 @@ while (1):
         j_k = find_j_k(Lk, d_Lk) #возвращает самый отрицательный
         u_Nk = np.array([])
         u_Nk =np.append(u_Nk, np.transpose(Bk * np.matrix(np.transpose([A[j_k]]))))
-        u_k = np.zeros(9)
+        u_k = np.zeros(len(np.transpose(A)[0]))
         u_k[j_k] = -1
         for i in range(len(N_k_p)):
             u_k[N_k_p[i]] = u_Nk[i]
