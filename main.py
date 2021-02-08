@@ -5,9 +5,9 @@ def find_j_k(N_k_0, d_k):
     mini = 1
     res = -1
     for i in range(len(N_k_0)):
-        if d_k[N_k_0[i]] < 0:
-            if mini != min(mini, d_k[N_k_0[i]]):
-                mini = min(mini, d_k[N_k_0[i]])
+        if d_k[i] < 0:
+            if mini != min(mini, d_k[i]):
+                mini = min(mini, d_k[i])
                 res = N_k_0[i]
     return res
 
@@ -23,19 +23,20 @@ A = [
 ]
 
 b = [120, 30, 100]
-
+A = np.array(A).transpose()
 # найти первый опорный вектор
 x = np.array([0, 0, 0, 0, 0, 0, 120, 30, 100])
 while (1):
-    N_k_p = [index for index, data in enumerate(x) if x[index] >= 0]
+    N_k_p = [index for index, data in enumerate(x) if x[index] > 0]
     N_k_0 = [index for index, data in enumerate(x) if x[index] == 0]
-    # количество в _k_p == 3 иначе пополнить и определитель не 0
+    # количество в N_k_p == 3 иначе пополнить и определитель не 0 # тут падает пока, надо написать функцию
     # ввести N1 и L1?
 
     Nk = N_k_p
     Lk = N_k_0
 
-    A = np.array(A).transpose()
+
+    print("A:",A)
     A_M_Nk = np.transpose(np.matrix([np.array(A[Nk[0]]), np.array(A[Nk[1]]), np.array(A[Nk[2]])]))  # [Nk]#!!!!!
     c_Nk = np.array([c[Nk[0]], c[Nk[1]], c[Nk[2]]])
 
@@ -65,5 +66,5 @@ while (1):
                 theta_k = min(x[N_k_p[i]] / u_k[N_k_p[i]], theta_k)
 
         x = x - theta_k * np.array(u_k)
-        print(x)
+        print("x:",x)
 print(x)
