@@ -34,9 +34,28 @@ while (1):
 
     Nk = N_k_p
     Lk = N_k_0
-
-
-    print("A:",A)
+    if len(N_k_p) == 2:#надо ещё индексы куда надо добавить
+        Nk.append(0)
+        for i in range(len(Lk)):
+            if (Lk[i] > Nk[0]) & (Lk[i] > Nk[1]):
+                A_M_Nk = np.transpose(np.matrix([np.array(A[Nk[0]]), np.array(A[Nk[1]]), np.array(A[Lk[i]])]))
+            if (Lk[i] < Nk[0]) & (Lk[i] < Nk[1]):
+                A_M_Nk = np.transpose(np.matrix([np.array(A[Lk[i]]), np.array(A[Nk[0]]), np.array(A[Nk[1]])]))
+            if (Lk[i] > Nk[0]) & (Lk[i] < Nk[1]):
+                A_M_Nk = np.transpose(np.matrix([ np.array(A[Nk[0]]),np.array(A[Lk[i]]), np.array(A[Nk[1]])]))
+            if np.linalg.det(A_M_Nk) != 0:
+                if (Lk[i] > Nk[0]) & (Lk[i] > Nk[1]):
+                    Nk[2] = Lk[i]
+                if (Lk[i] < Nk[0]) & (Lk[i] < Nk[1]):
+                    Nk[2] = Nk[1]
+                    Nk[1] = Nk[0]
+                    Nk[0] = Lk[i]
+                if (Lk[i] > Nk[0]) & (Lk[i] < Nk[1]):
+                    Nk[2] = Nk[1]
+                    Nk[1] = Lk[i]
+                Lk.remove(Lk[i])
+                break
+    print("A:", A)
     A_M_Nk = np.transpose(np.matrix([np.array(A[Nk[0]]), np.array(A[Nk[1]]), np.array(A[Nk[2]])]))  # [Nk]#!!!!!
     c_Nk = np.array([c[Nk[0]], c[Nk[1]], c[Nk[2]]])
 
