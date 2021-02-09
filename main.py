@@ -1,5 +1,21 @@
 import numpy as np
 
+def find_first_vec(A, b, N):
+    A = np.array(A)
+    for i in range(N):
+        for j in range(i, N):
+            for k in range(j, N):  # составить матрицу из столбцов, решить методом наусса проверить на положительность
+                A_help = np.array([A[i], A[j], A[k]]).transpose()
+                if np.linalg.det(A_help) != 0:
+                    first_vec = np.linalg.solve(A_help, b)
+                    if (first_vec[0] != first_vec[1]) & (first_vec[0] != first_vec[2]) & (
+                            first_vec[2] != first_vec[1]) & (np.ma.amin(first_vec) >= 0):
+                        # заполнить нулями
+                        vec = np.array([0., 0., 0., 0., 0., 0.])
+                        vec[i] = first_vec[0]
+                        vec[j] = first_vec[1]
+                        vec[k] = first_vec[2]
+                        return vec
 
 def find_j_k(N_k_0, d_k):
     mini = 1
@@ -14,18 +30,18 @@ def find_j_k(N_k_0, d_k):
 
 # начальные данные
 # MxN #3x5
-c = [-8.2, -9, -9.6, 1, -1, -1, 0, 0, 0]  # [-7, -8.2, -8.6, 0, 0, 0]
+c =  [-7, -8.2, -8.6, 0, 0, 0]
 
 A = [
-    [0.6, 0.3, 0.5, -1, 0, 0, 1, 0, 0],
-    [0.1, 0.2, 0.1, 0, 1, 0, 0, 1, 0],
-    [0.5, 0.3, 0.4, 0, 0, 1, 0, 0, 1]
+    [0.6, 0.3, 0.5, -1, 0, 0],
+    [0.1, 0.2, 0.1, 0, 1, 0],
+    [0.5, 0.3, 0.4, 0, 0, 1 ]
 ]
 
 b = [120, 30, 100]
 A = np.array(A).transpose()
 # найти первый опорный вектор
-x = np.array([0, 0, 0, 0, 0, 0, 120, 30, 100])
+x = find_first_vec(A,b,6)
 while (1):
     N_k_p = [index for index, data in enumerate(x) if x[index] > 0]
     N_k_0 = [index for index, data in enumerate(x) if x[index] == 0]
