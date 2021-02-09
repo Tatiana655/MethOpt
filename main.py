@@ -1,5 +1,5 @@
 import numpy as np
-
+#тут метод искуственного базиса
 def find_first_vec(A, b, N):
     A = np.array(A)
     for i in range(N):
