@@ -1,5 +1,6 @@
 import numpy as np
-#тут метод искуственного базиса
+
+
 def find_first_vec(A, b, N):
     A = np.array(A)
     for i in range(N):
@@ -17,6 +18,7 @@ def find_first_vec(A, b, N):
                         print(vec)
                         return vec
 
+
 def find_j_k(N_k_0, d_k):
     mini = 1
     res = -1
@@ -30,18 +32,18 @@ def find_j_k(N_k_0, d_k):
 
 # начальные данные
 # MxN #3x5
-c =  [0,0, 0, 0, 0, 0,1,1,1]
+c = [0, 0, 0, 0, 0, 0, 1, 1, 1]
 
 A = [
-    [0.6, 0.3, 0.5, -1, 0, 0,1,0,0],
-    [0.1, 0.2, 0.1, 0, 1, 0,0,1,0],
-    [0.5, 0.3, 0.4, 0, 0, 1 , 0,0,1]
+    [0.6, 0.3, 0.5, -1, 0, 0, 1, 0, 0],
+    [0.1, 0.2, 0.1, 0, 1, 0, 0, 1, 0],
+    [0.5, 0.3, 0.4, 0, 0, 1, 0, 0, 1]
 ]
 
 b = [120, 30, 100]
 A = np.array(A).transpose()
 # найти первый опорный вектор
-x = find_first_vec(A,b,9)
+x = [0, 0, 0, 0, 0, 0, 120, 30, 100]  # find_first_vec(A, b, 9)
 while (1):
     N_k_p = [index for index, data in enumerate(x) if x[index] > 0]
     N_k_0 = [index for index, data in enumerate(x) if x[index] == 0]
@@ -50,7 +52,7 @@ while (1):
 
     Nk = N_k_p
     Lk = N_k_0
-    if len(N_k_p) == 2:#надо ещё индексы куда надо добавить
+    if len(N_k_p) == 2:  # надо ещё индексы куда надо добавить
         Nk.append(0)
         for i in range(len(Lk)):
             if (Lk[i] > Nk[0]) & (Lk[i] > Nk[1]):
@@ -58,7 +60,7 @@ while (1):
             if (Lk[i] < Nk[0]) & (Lk[i] < Nk[1]):
                 A_M_Nk = np.transpose(np.matrix([np.array(A[Lk[i]]), np.array(A[Nk[0]]), np.array(A[Nk[1]])]))
             if (Lk[i] > Nk[0]) & (Lk[i] < Nk[1]):
-                A_M_Nk = np.transpose(np.matrix([ np.array(A[Nk[0]]),np.array(A[Lk[i]]), np.array(A[Nk[1]])]))
+                A_M_Nk = np.transpose(np.matrix([np.array(A[Nk[0]]), np.array(A[Lk[i]]), np.array(A[Nk[1]])]))
             if np.linalg.det(A_M_Nk) != 0:
                 if (Lk[i] > Nk[0]) & (Lk[i] > Nk[1]):
                     Nk[2] = Lk[i]
@@ -86,20 +88,22 @@ while (1):
         sol = x
         break
     else:
-        j_k = find_j_k(Lk, d_Lk) #возвращает самый отрицательный
+        j_k = find_j_k(Lk, d_Lk)  # возвращает самый отрицательный
         u_Nk = np.array([])
-        u_Nk =np.append(u_Nk, np.transpose(Bk * np.matrix(np.transpose([A[j_k]]))))
+        u_Nk = np.append(u_Nk, np.transpose(Bk * np.matrix(np.transpose([A[j_k]]))))
         u_k = np.zeros(len(np.transpose(A)[0]))
         u_k[j_k] = -1
         for i in range(len(N_k_p)):
             u_k[N_k_p[i]] = u_Nk[i]
-        #если кто-то из Nk <0 то умирай. Всё плохо. тут такого типа нет
+        # если весь Nk < 0 то умирай. Всё плохо. тут такого типа нет
 
-        theta_k = x[N_k_p[0]] / u_k[N_k_p[0]]
+        theta_k = 1000000000
         for i in range(len(N_k_p)):
-            if (u_k[N_k_p[i]] > 0):
+            if u_k[N_k_p[i]] > 0:
                 theta_k = min(x[N_k_p[i]] / u_k[N_k_p[i]], theta_k)
 
+        #if theta_k > 0:
         x = x - theta_k * np.array(u_k)
-        print("x:", x)
-print("res = ",x)
+
+        print("x111111:", x)
+print("0000000", x)
