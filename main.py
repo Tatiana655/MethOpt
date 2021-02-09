@@ -8,13 +8,13 @@ def find_first_vec(A, b, N):
                 A_help = np.array([A[i], A[j], A[k]]).transpose()
                 if np.linalg.det(A_help) != 0:
                     first_vec = np.linalg.solve(A_help, b)
-                    if (first_vec[0] != first_vec[1]) & (first_vec[0] != first_vec[2]) & (
-                            first_vec[2] != first_vec[1]) & (np.ma.amin(first_vec) >= 0):
+                    if (np.ma.amin(first_vec) != 0):
                         # заполнить нулями
-                        vec = np.array([0., 0., 0., 0., 0., 0.])
+                        vec = np.zeros(N)
                         vec[i] = first_vec[0]
                         vec[j] = first_vec[1]
                         vec[k] = first_vec[2]
+                        print(vec)
                         return vec
 
 def find_j_k(N_k_0, d_k):
@@ -30,18 +30,18 @@ def find_j_k(N_k_0, d_k):
 
 # начальные данные
 # MxN #3x5
-c =  [-7, -8.2, -8.6, 0, 0, 0]
+c =  [0,0, 0, 0, 0, 0,1,1,1]
 
 A = [
-    [0.6, 0.3, 0.5, -1, 0, 0],
-    [0.1, 0.2, 0.1, 0, 1, 0],
-    [0.5, 0.3, 0.4, 0, 0, 1 ]
+    [0.6, 0.3, 0.5, -1, 0, 0,1,0,0],
+    [0.1, 0.2, 0.1, 0, 1, 0,0,1,0],
+    [0.5, 0.3, 0.4, 0, 0, 1 , 0,0,1]
 ]
 
 b = [120, 30, 100]
 A = np.array(A).transpose()
 # найти первый опорный вектор
-x = find_first_vec(A,b,6)
+x = find_first_vec(A,b,9)
 while (1):
     N_k_p = [index for index, data in enumerate(x) if x[index] > 0]
     N_k_0 = [index for index, data in enumerate(x) if x[index] == 0]
@@ -101,5 +101,5 @@ while (1):
                 theta_k = min(x[N_k_p[i]] / u_k[N_k_p[i]], theta_k)
 
         x = x - theta_k * np.array(u_k)
-        print("x:",x)
-print(x)
+        print("x:", x)
+print("res = ",x)
