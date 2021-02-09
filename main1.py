@@ -1,5 +1,5 @@
 import numpy as np
-#тут код с симплекс методом для исходной задачи
+
 def find_first_vec(A, b, N):
     A = np.array(A)
     for i in range(N):
@@ -41,7 +41,8 @@ A = [
 b = [120, 30, 100]
 A = np.array(A).transpose()
 # найти первый опорный вектор
-x = [50. ,50., 150., 0., 0., 0.]#find_first_vec(A,b,6)
+x = [2.0000000e+02 ,0.0000000e+00 ,4.4408921e-14 ,0.0000000e+00, 1.0000000e+01,
+ 0.0000000e+00]#find_first_vec(A,b,6)
 while (1):
     N_k_p = [index for index, data in enumerate(x) if x[index] > 0]
     N_k_0 = [index for index, data in enumerate(x) if x[index] == 0]
@@ -95,11 +96,11 @@ while (1):
             u_k[N_k_p[i]] = u_Nk[i]
         #если кто-то из Nk <0 то умирай. Всё плохо. тут такого типа нет
 
-        theta_k = x[N_k_p[0]] / u_k[N_k_p[0]]
+        theta_k = 1000000000
         for i in range(len(N_k_p)):
             if (u_k[N_k_p[i]] > 0):
                 theta_k = min(x[N_k_p[i]] / u_k[N_k_p[i]], theta_k)
 
         x = x - theta_k * np.array(u_k)
-        print("x111111:", x)
-print("0000000",x)
+        print("x:", x)
+print("res",x)
