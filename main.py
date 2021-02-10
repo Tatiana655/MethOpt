@@ -1,7 +1,9 @@
 import numpy as np
 
-def F(c,x):
-    return sum(c*x)
+
+def F(c, x):
+    return sum(c * x)
+
 
 def find_first_vec(A, b, N):
     A = np.array(A)
@@ -34,10 +36,10 @@ def find_j_k(N_k_0, d_k):
 
 # Исходная матрица, вектор свободных членов, вектор целевой функции, перый опорный вектор
 def SimplexAlg(A, b, c, N, x):
-    print("Начальный вектор: ", x)
+    #print("Начальный вектор: ", x)
     while (1):
-        N_k_p = [index for index, data in enumerate(x) if x[index] > 0]
-        N_k_0 = [index for index, data in enumerate(x) if x[index] == 0]
+        N_k_p = [index for index, data in enumerate(x) if x[index] > 1e-10]
+        N_k_0 = [index for index, data in enumerate(x) if x[index] <= 1e-10]
         # количество в N_k_p == 3 иначе пополнить и определитель не 0 # тут падает пока, надо написать функцию
         # ввести N1 и L1?
 
@@ -74,7 +76,10 @@ def SimplexAlg(A, b, c, N, x):
         dk = np.transpose(c) - np.array(yk) * np.transpose(np.matrix(A))
         d_non = np.array([])
         d_non = np.append(d_non, dk[0])
-        d_Lk = [d_non[index] for index, data in enumerate(d_non) if abs(d_non[index]) > 1e-10]
+        #d_Lk = [d_non[index] for index, data in enumerate(d_non) if abs(d_non[index]) > 1e-10]
+        d_Lk = np.zeros(len(Lk))
+        for i in range(len(Lk)):
+            d_Lk[i] = d_non[Lk[i]]
         if np.ma.amin(d_Lk) >= 0:
             sol = x
             break
@@ -84,20 +89,25 @@ def SimplexAlg(A, b, c, N, x):
             u_Nk = np.append(u_Nk, np.transpose(Bk * np.matrix(np.transpose([A[j_k]]))))
             u_k = np.zeros(len(np.transpose(A)[0]))
             u_k[j_k] = -1
+            count = 0
             for i in range(len(Nk)):
                 u_k[Nk[i]] = u_Nk[i]
-            # если весь Nk < 0 то умирай. Всё плохо. тут такого типа нет
-
+                if u_k[Nk[i]] <= 0:
+                    count += 1
+            # если весь u[Nk] <= 0 то умирай. Всё плохо. тут такого типа нет
+            if count == len(Nk):
+                print("Область неограничена")
+                return x
             theta_k = 1000000000
             for i in range(len(Nk)):
                 if u_k[Nk[i]] > 0:
                     theta_k = min(x[Nk[i]] / u_k[Nk[i]], theta_k)
-            if (theta_k == 1000000000):
-                theta_k = 1
-            # if theta_k > 0:
+            if (theta_k == 1000000000) or (theta_k == 0):
+                print("theta <=0:(")
+                return x
             x = x - theta_k * np.array(u_k)
 
-            print("опорный вектор: ", x)
+            #print("опорный вектор: ", x)
     return x
 
 
@@ -107,8 +117,8 @@ c = [0, 0, 0, 0, 0, 0, 1, 1, 1]
 
 A = [
     [0.6, 0.3, 0.5, -1, 0, 0, 1, 0, 0],
-    [0.1, 0.2, 0.1,  0, 1, 0, 0, 1, 0],
-    [0.5, 0.3, 0.4,  0, 0, 1, 0, 0, 1]
+    [0.1, 0.2, 0.1, 0, 1, 0, 0, 1, 0],
+    [0.5, 0.3, 0.4, 0, 0, 1, 0, 0, 1]
 ]
 
 b = [120, 30, 100]
@@ -128,20 +138,22 @@ A = [
 
 b = [120, 30, 100]
 A = np.array(A).transpose()
-x1 = np.delete(x,[6,7,8])
+x1 = np.delete(x, [6, 7, 8])
 x1 = SimplexAlg(A, b, c, 6, x1)
 print("Finish: ", x1)
-print("F(x) = ", F(c,x1))
+print("F(x) = ", F(c, x1))
+solution = x1
+solutionF = F(c, x1)
 
-#Двойственная задача:
+# Двойственная задача:
 # начальные данные
 # MxN #3x5
 c = [0, 0, 0, 0, 0, 0, 1, 1, 1]
 
 A = [
-    [-0.6, 0.1, 0.5, -1,  0,  0, 1, 0, 0],
-    [-0.3, 0.2, 0.3,  0, -1,  0, 0, 1, 0],
-    [-0.5, 0.1, 0.4,  0,  0, -1, 0, 0, 1]
+    [-0.6, 0.1, 0.5, -1, 0, 0, 1, 0, 0],
+    [-0.3, 0.2, 0.3, 0, -1, 0, 0, 1, 0],
+    [-0.5, 0.1, 0.4, 0, 0, -1, 0, 0, 1]
 ]
 
 b = [7, 8.2, 8.6]
@@ -154,14 +166,48 @@ print("Result: ", x)
 c = [-120, 30, 100, 0, 0, 0]
 
 A = [
-    [-0.6, 0.1, 0.5, -1,  0,  0],
-    [-0.3, 0.2, 0.3,  0, -1,  0],
-    [-0.5, 0.1, 0.4,  0,  0, -1]
+    [-0.6, 0.1, 0.5, -1, 0, 0],
+    [-0.3, 0.2, 0.3, 0, -1, 0],
+    [-0.5, 0.1, 0.4, 0, 0, -1]
 ]
 
 b = [7, 8.2, 8.6]
 A = np.array(A).transpose()
-x1 = np.delete(x,[6,7,8])
+x1 = np.delete(x, [6, 7, 8])
 x1 = SimplexAlg(A, b, c, 6, x1)
 print("Finish: ", x1)
-print("F(x) = ", F(c,x1))
+print("F(x) = ", F(c, x1))
+print("Вносим изменения в b ")
+
+for i in 0,1,2,3,4,5,6,7,8,9:
+    c_ch = [0, 0, 0, 0, 0, 0, 1, 1, 1]
+
+    A_ch = [
+        [0.6, 0.3, 0.5, -1, 0, 0, 1, 0, 0],
+        [0.1, 0.2, 0.1, 0, 1, 0, 0, 1, 0],
+        [0.5, 0.3, 0.4, 0, 0, 1, 0, 0, 1]
+    ]
+    delt = 10**(-i)
+    print(delt)
+    b_ch = [120, 30, 100+delt]
+    A_ch = np.array(A_ch).transpose()
+    # найти первый опорный вектор
+    x_ch = [0, 0, 0, 0, 0, 0, b_ch[0], b_ch[1], b_ch[2]]  # find_first_vec(A, b, 9)
+    x_ch = SimplexAlg(A_ch, b_ch, c_ch, 9, x_ch)
+    #print("Result: ", x_ch)
+
+    c_ch = [-7, -8.2, -8.6, 0, 0, 0]
+
+    A_ch = [
+        [0.6, 0.3, 0.5, -1, 0, 0],
+        [0.1, 0.2, 0.1, 0, 1, 0],
+        [0.5, 0.3, 0.4, 0, 0, 1]
+    ]
+
+    #b_ch = [120+1**(-i), 30, 100]
+    A_ch = np.array(A_ch).transpose()
+    x1_ch = np.delete(x_ch, [6, 7, 8])
+    x1_ch = SimplexAlg(A_ch, b_ch, c_ch, 6, x1_ch)
+
+    print("||x - x_ch|| = ", np.sum(np.abs(x1_ch - solution)**2)**(1./2))
+    print("|F(x) - F_ch(x)| = ", abs(solutionF - F(c_ch, x1_ch)))
