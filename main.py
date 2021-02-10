@@ -34,7 +34,7 @@ def find_j_k(N_k_0, d_k):
 
 # Исходная матрица, вектор свободных членов, вектор целевой функции, перый опорный вектор
 def SimplexAlg(A, b, c, N, x):
-    print("Первый опорный вектор: ", x)
+    print("Начальный вектор: ", x)
     while (1):
         N_k_p = [index for index, data in enumerate(x) if x[index] > 0]
         N_k_0 = [index for index, data in enumerate(x) if x[index] == 0]
@@ -74,7 +74,7 @@ def SimplexAlg(A, b, c, N, x):
         dk = np.transpose(c) - np.array(yk) * np.transpose(np.matrix(A))
         d_non = np.array([])
         d_non = np.append(d_non, dk[0])
-        d_Lk = [d_non[index] for index, data in enumerate(d_non) if d_non[index] != 0]
+        d_Lk = [d_non[index] for index, data in enumerate(d_non) if abs(d_non[index]) > 1e-10]
         if np.ma.amin(d_Lk) >= 0:
             sol = x
             break
@@ -84,15 +84,16 @@ def SimplexAlg(A, b, c, N, x):
             u_Nk = np.append(u_Nk, np.transpose(Bk * np.matrix(np.transpose([A[j_k]]))))
             u_k = np.zeros(len(np.transpose(A)[0]))
             u_k[j_k] = -1
-            for i in range(len(N_k_p)):
-                u_k[N_k_p[i]] = u_Nk[i]
+            for i in range(len(Nk)):
+                u_k[Nk[i]] = u_Nk[i]
             # если весь Nk < 0 то умирай. Всё плохо. тут такого типа нет
 
             theta_k = 1000000000
-            for i in range(len(N_k_p)):
-                if u_k[N_k_p[i]] > 0:
-                    theta_k = min(x[N_k_p[i]] / u_k[N_k_p[i]], theta_k)
-
+            for i in range(len(Nk)):
+                if u_k[Nk[i]] > 0:
+                    theta_k = min(x[Nk[i]] / u_k[Nk[i]], theta_k)
+            if (theta_k == 1000000000):
+                theta_k = 1
             # if theta_k > 0:
             x = x - theta_k * np.array(u_k)
 
@@ -106,8 +107,8 @@ c = [0, 0, 0, 0, 0, 0, 1, 1, 1]
 
 A = [
     [0.6, 0.3, 0.5, -1, 0, 0, 1, 0, 0],
-    [0.1, 0.2, 0.1, 0, 1, 0, 0, 1, 0],
-    [0.5, 0.3, 0.4, 0, 0, 1, 0, 0, 1]
+    [0.1, 0.2, 0.1,  0, 1, 0, 0, 1, 0],
+    [0.5, 0.3, 0.4,  0, 0, 1, 0, 0, 1]
 ]
 
 b = [120, 30, 100]
@@ -115,7 +116,7 @@ A = np.array(A).transpose()
 # найти первый опорный вектор
 x = [0, 0, 0, 0, 0, 0, 120, 30, 100]  # find_first_vec(A, b, 9)
 x = SimplexAlg(A, b, c, 9, x)
-print("Finish: ", x)
+print("Result: ", x)
 
 c = [-7, -8.2, -8.6, 0, 0, 0]
 
@@ -146,7 +147,7 @@ A = [
 b = [7, 8.2, 8.6]
 A = np.array(A).transpose()
 # найти первый опорный вектор
-x = [0, 0, 0, 0, 0, 0, 120, 30, 100]  # find_first_vec(A, b, 9)
+x = [0, 0, 0, 0, 0, 0, 7, 8.2, 8.6]  # find_first_vec(A, b, 9)
 x = SimplexAlg(A, b, c, 9, x)
 print("Result: ", x)
 
