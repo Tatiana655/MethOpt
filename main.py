@@ -1,6 +1,5 @@
 import numpy as np
-
-
+import matplotlib.pyplot as plt
 def F(c, x):
     return sum(c * x)
 
@@ -113,6 +112,8 @@ def SimplexAlg(A, b, c, N, x):
 
 # начальные данные
 # MxN #3x5
+#ff
+
 c = [0, 0, 0, 0, 0, 0, 1, 1, 1]
 
 A = [
@@ -157,6 +158,7 @@ A = [
 ]
 
 b = [7, 8.2, 8.6]
+
 A = np.array(A).transpose()
 # найти первый опорный вектор
 x = [0, 0, 0, 0, 0, 0, 7, 8.2, 8.6]  # find_first_vec(A, b, 9)
@@ -178,36 +180,59 @@ x1 = SimplexAlg(A, b, c, 6, x1)
 print("Finish: ", x1)
 print("F(x) = ", F(c, x1))
 print("Вносим изменения в b ")
+print_F = np.zeros((3,10))
+print_delt = np.zeros((3,10))
+for k in range(3):
+    for i in 0,1,2,3,4,5,6,7,8,9:
+        c_ch = [0, 0, 0, 0, 0, 0, 1, 1, 1]
 
-for i in 0,1,2,3,4,5,6,7,8,9:
-    c_ch = [0, 0, 0, 0, 0, 0, 1, 1, 1]
+        A_ch = [
+            [0.6, 0.3, 0.5, -1, 0, 0, 1, 0, 0],
+            [0.1, 0.2, 0.1, 0, 1, 0, 0, 1, 0],
+            [0.5, 0.3, 0.4, 0, 0, 1, 0, 0, 1]
+        ]
+        delt = 10**(-i)
+        print_delt[k][i] = delt
+        print(delt)
+        if (k==0):
+            b_ch = [120+delt, 30, 100]
+        if (k==1):
+            b_ch = [120, 30 + delt, 100]
+        if (k == 2):
+            b_ch = [120, 30, 100+delt]
+        A_ch = np.array(A_ch).transpose()
+        # найти первый опорный вектор
+        x_ch = [0, 0, 0, 0, 0, 0, b_ch[0], b_ch[1], b_ch[2]]  # find_first_vec(A, b, 9)
+        x_ch = SimplexAlg(A_ch, b_ch, c_ch, 9, x_ch)
+        #print("Result: ", x_ch)
 
-    A_ch = [
-        [0.6, 0.3, 0.5, -1, 0, 0, 1, 0, 0],
-        [0.1, 0.2, 0.1, 0, 1, 0, 0, 1, 0],
-        [0.5, 0.3, 0.4, 0, 0, 1, 0, 0, 1]
-    ]
-    delt = 10**(-i)
-    print(delt)
-    b_ch = [120, 30, 100+delt]
-    A_ch = np.array(A_ch).transpose()
-    # найти первый опорный вектор
-    x_ch = [0, 0, 0, 0, 0, 0, b_ch[0], b_ch[1], b_ch[2]]  # find_first_vec(A, b, 9)
-    x_ch = SimplexAlg(A_ch, b_ch, c_ch, 9, x_ch)
-    #print("Result: ", x_ch)
+        c_ch = [-7, -8.2, -8.6, 0, 0, 0]
 
-    c_ch = [-7, -8.2, -8.6, 0, 0, 0]
+        A_ch = [
+            [0.6, 0.3, 0.5, -1, 0, 0],
+            [0.1, 0.2, 0.1, 0, 1, 0],
+            [0.5, 0.3, 0.4, 0, 0, 1]
+        ]
 
-    A_ch = [
-        [0.6, 0.3, 0.5, -1, 0, 0],
-        [0.1, 0.2, 0.1, 0, 1, 0],
-        [0.5, 0.3, 0.4, 0, 0, 1]
-    ]
+        #b_ch = [120+1**(-i), 30, 100]
+        A_ch = np.array(A_ch).transpose()
+        x1_ch = np.delete(x_ch, [6, 7, 8])
+        x1_ch = SimplexAlg(A_ch, b_ch, c_ch, 6, x1_ch)
 
-    #b_ch = [120+1**(-i), 30, 100]
-    A_ch = np.array(A_ch).transpose()
-    x1_ch = np.delete(x_ch, [6, 7, 8])
-    x1_ch = SimplexAlg(A_ch, b_ch, c_ch, 6, x1_ch)
+        print_F[k][i] = np.sum(np.abs(x1_ch - solution)**2)**(1./2)
+        print("||x - x_ch|| = ", np.sum(np.abs(x1_ch - solution)**2)**(1./2))
+        print("|F(x) - F_ch(x)| = ", abs(solutionF - F(c_ch, x1_ch)))
+#print(np.finfo(np.float64))
+line1,  = plt.plot(print_delt[0], print_F[0], 'b.--', linewidth=1.0)
 
-    print("||x - x_ch|| = ", np.sum(np.abs(x1_ch - solution)**2)**(1./2))
-    print("|F(x) - F_ch(x)| = ", abs(solutionF - F(c_ch, x1_ch)))
+line2,  =plt.plot(print_delt[1], print_F[1], 'g.--', linewidth=1.0)
+
+line3,  =plt.plot(print_delt[2], print_F[2], 'r.--', linewidth=1.0)
+
+plt.legend( (line1, line2, line3), ('b_1+delt', 'b_2+delt', 'b_3+delt'))
+
+
+plt.ylabel('||x-x_changed||')
+plt.xlabel('Delta_b')
+plt.grid()
+plt.show()
