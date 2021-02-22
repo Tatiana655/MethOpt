@@ -77,7 +77,7 @@ def Alg(x1):
             if x1[len(u) - 1][j] != 0:
                 v[j] = x1[len(u) - 1][j] + u[len(u) - 1]
 
-        # print(u, v)
+        print("u,v : ",u, v)
 
         # проверяем оптимальность в пустых клетках типа перебором или по хитрому
         # Beda if v_j - u_i > cij
@@ -86,18 +86,19 @@ def Alg(x1):
         if i == -1:
             print("this is opt vec")
             return x1
-        #print(i, j)
+        print("индексы, где нарушается условие",i, j)
         # цикл пересчёта
 
         array.append([i, j])
         Modi(True, x1, i, j, 0) #Находит цикл пересчёта, записывает его в array
-        #print(array)
+        print("цикл пересчёта: ", array)
         #там перый и последный элементы повторяются
         array.remove(array[0])
         #print(array)
 
         # найди минимум из "-" клеток
         mina = findMin(array, x1)
+        print("min- = ", mina)
         # пересчёт объёмов груза:
         for i in range(0, len(array), 2):  # "-"
             x1[array[i][0]][array[i][1]] -= mina
@@ -105,7 +106,8 @@ def Alg(x1):
         for i in range(1, len(array), 2):  # "+"
             x1[array[i][0]][array[i][1]] += mina
 
-        # print(x1)
+        print("new x1:",x1)
+        array.clear()
         # снова проверяем оптимальность и пересчёт плана
 
 
@@ -124,7 +126,7 @@ x1 = [
     [8, 0, 0, 0, 0],
     [8, 12, 0, 0, 0],
     [0, 1, 5, 0, 0],
-    [0, 0, 3, 7, 5]
+    [0, 0, 3, 7, 9]
 ]
 
 x1 = Alg(x1)
