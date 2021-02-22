@@ -11,7 +11,7 @@ def rightPoint(C, u,v):
               if (max1 != max(max1, abs(v[j] - u[i] - C[i][j]))):
                 max_i = i#string u
                 max_j = j#col v
-                max1 = max(max1, abs(v[j] - u[i] - C[i][j]))
+                max1 = max(max1, abs((v[j] - u[i]) - C[i][j]))
     return max_i, max_j
 
 array = [] #не  забыть добавить сюда первый элемент
@@ -70,14 +70,14 @@ def Alg(x1):
         for i in range(len(C) - 1):  # строки
             for j in range(len(C[0])):  # столбцы
                 if x1[i][j] != 0:
-                    v[j] = x1[i][j] + u[i]
-                    u[i + 1] = -x1[i + 1][j] + v[j]
+                    v[j] = C[i][j] + u[i]
+                    u[i + 1] = -C[i + 1][j] + v[j]
 
         for j in range(len(C[0])):
             if x1[len(u) - 1][j] != 0:
-                v[j] = x1[len(u) - 1][j] + u[len(u) - 1]
+                v[j] = C[len(u) - 1][j] + u[len(u) - 1]
 
-        print("u,v : ",u, v)
+        print("u,v : ", u, v)
 
         # проверяем оптимальность в пустых клетках типа перебором или по хитрому
         # Beda if v_j - u_i > cij
@@ -86,7 +86,7 @@ def Alg(x1):
         if i == -1:
             print("this is opt vec")
             return x1
-        print("индексы, где нарушается условие",i, j)
+        print("индексы, где нарушается условие", i, j)
         # цикл пересчёта
 
         array.append([i, j])
