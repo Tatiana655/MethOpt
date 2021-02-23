@@ -6,13 +6,20 @@ def rightPoint(C, u, v):
     max1 = -1
     max_i = -1
     max_j = -1
+    cmax = -1
     for j in range(len(v)):
         for i in range(len(u)):
             if (v[j] - u[i]) > C[i][j]:
-                if (max1 != max(max1, abs((v[j] - u[i]) - C[i][j]))):
+                if max1 < max(max1, abs((v[j] - u[i]) - C[i][j])):
                     max_i = i  # string u
                     max_j = j  # col v
                     max1 = max(max1, abs((v[j] - u[i]) - C[i][j]))
+                    cmax = C[i][j]
+                if max1 == abs((v[j] - u[i]) - C[i][j]) and cmax < C[i][j]:
+                    max_i = i  # string u
+                    max_j = j  # col v
+                    max1 = max(max1, abs((v[j] - u[i]) - C[i][j]))
+                    cmax = C[i][j]
     return max_i, max_j
 
 
@@ -83,22 +90,37 @@ def Alg(x1):
         #            if x1[len(u) - 1][j] != 0:
         #                v[j] = C[len(u) - 1][j] + u[len(u) - 1]
 
-        matrix = np.zeros((len(array) + 1, len(array) + 1))
-        b = np.zeros(len(array) + 1)
-        for i in range(len(array)):
-            matrix[i][array[i][0]] = -1
-            matrix[i][len(x1)+array[i][1]] = 1
-            b[i] = C[array[i][0]][array[i][1]]
-        matrix[len(array)][0] = -1
-        #print("u,v : ", u, v)
-        vec = np.linalg.solve(matrix, b)
-        u = vec[0:len(x1)-1]
-        v = vec[len(x1):len(x1)+len(x1[0])-1]
+        # matrix = np.zeros((len(array) + 1, len(array) + 1))
+        # b = np.zeros(len(array) + 1)
+        # for i in range(len(array)):
+        #      matrix[i][array[i][0]] = -1
+        #     matrix[i][len(x1)+array[i][1]] = 1
+        #      b[i] = C[array[i][0]][array[i][1]]
+        #   matrix[len(array)][0] = -1
+        # print("u,v : ", u, v)
+        #  vec = np.linalg.solve(matrix, b)
+        #  u = vec[0:len(x1)-1]
+        # v = vec[len(x1):len(x1)+len(x1[0])-1]
         # проверяем оптимальность в пустых клетках типа перебором или по хитрому
         # Beda if v_j - u_i > cij
+        matrix = np.zeros((len(x1)+len(x1[0]), (len(x1)+len(x1[0]))))
+        k = 0
+        b = np.zeros(len(x1)+len(x1[0]))
+        for i in range(len(x1)):#u
+            for j in range(len(x1[0])):#v
+                if x1[i][j] != 0:
+                    matrix[k][i] = -1
+                    matrix[k][j+len(x1)] = 1
+                    b[k] = C[i][j]
+                    k += 1
+        matrix[k][0] = -1
+
+        vec = np.linalg.solve(matrix, b)
+        u = vec[0:len(x1)]
+        v = vec[len(x1): (len(x1)+len(x1[0]))]
 
         i, j = rightPoint(C, u, v)
-        if (i == -1) and (len(array) > 1):
+        if (i == -1):
             print("this is opt vec")
             return x1
         print("индексы, где нарушается условие", i, j)
@@ -138,7 +160,7 @@ C = [
 ]
 a = [16, 13, 8, 7, 9]
 
-b = [8, 20, 6, 9]
+b = [8, 20, 6, 19]
 
 # первый опорный вектор, полученный методом С-З угла
 x1 = [
