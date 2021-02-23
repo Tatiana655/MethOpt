@@ -83,12 +83,13 @@ def Alg(x1):
         #            if x1[len(u) - 1][j] != 0:
         #                v[j] = C[len(u) - 1][j] + u[len(u) - 1]
 
-        matrix = np.zeros((len(array), len(x1)+len(x1[0])))
-        b = np.zeros(len(array))
+        matrix = np.zeros((len(array) + 1, len(array) + 1))
+        b = np.zeros(len(array) + 1)
         for i in range(len(array)):
             matrix[i][array[i][0]] = -1
             matrix[i][len(x1)+array[i][1]] = 1
             b[i] = C[array[i][0]][array[i][1]]
+        matrix[len(array)][0] = -1
         #print("u,v : ", u, v)
         vec = np.linalg.solve(matrix, b)
         u = vec[0:len(x1)-1]
@@ -97,7 +98,7 @@ def Alg(x1):
         # Beda if v_j - u_i > cij
 
         i, j = rightPoint(C, u, v)
-        if i == -1:
+        if (i == -1) and (len(array) > 1):
             print("this is opt vec")
             return x1
         print("индексы, где нарушается условие", i, j)
