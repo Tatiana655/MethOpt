@@ -63,6 +63,12 @@ def findMin(array, x0):
         mina = min(mina, x0[array[k][0]][array[k][1]])
     return mina
 
+def F(x1):
+    s = 0
+    for i in range(len(C)):
+        for j in range(len(C[0])):
+            s += C[i][j] * x1[i][j]
+    return  s
 
 def Alg(x1):
     while (1):
@@ -118,10 +124,11 @@ def Alg(x1):
         vec = np.linalg.solve(matrix, b)
         u = vec[0:len(x1)]
         v = vec[len(x1): (len(x1)+len(x1[0]))]
-
+        print("u = ", u)
+        print("v = ", v)
         i, j = rightPoint(C, u, v)
         if (i == -1):
-            print("this is opt vec")
+            print("Оптимальный вектор:")
             return x1
         print("индексы, где нарушается условие", i, j)
         # цикл пересчёта
@@ -148,6 +155,7 @@ def Alg(x1):
             i += 2
 
         print("new x1:", x1)
+        print("new F(x1):", F(x1))
         array.clear()
         # снова проверяем оптимальность и пересчёт плана
 
@@ -169,6 +177,8 @@ x1 = [
     [0, 1, 5, 0, 0],
     [0, 0, 3, 7, 9]
 ]
-
+print("Начальный вектор: ", x1, "\n\n")
 x1 = Alg(x1)
 print(x1)
+
+print("F_min = ", F(x1))
