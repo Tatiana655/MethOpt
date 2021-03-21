@@ -65,7 +65,7 @@ def Grad2Prop(eps, x_0, y_0, lam, delt):  # 0<lam<1, 0<delt<0.5
         count += 1
         alpha = 1
         A = [[H11(x_old, y_old), H12(x_old, y_old)], [H21(x_old, y_old), H22(x_old, y_old)]]
-        b = [GradFx(x_old, x_old), GradFy(x_old, x_old)]
+        b = [-GradFx(x_old, x_old), -GradFy(x_old, x_old)]
         pk = np.linalg.solve(A, b)
 
         while F(x_old + alpha * pk[0], y_old + alpha * pk[1]) - F(x_old, y_old) > alpha * delt * (
@@ -74,8 +74,8 @@ def Grad2Prop(eps, x_0, y_0, lam, delt):  # 0<lam<1, 0<delt<0.5
 
         tmp1 = x_new
         tmp2 = y_new
-        x_new = x_old - alpha * pk[0]
-        y_new = y_old - alpha * pk[1]
+        x_new = x_old + alpha * pk[0]
+        y_new = y_old + alpha * pk[1]
         x_old = tmp1
         y_old = tmp2
     return count
@@ -89,8 +89,8 @@ y_0 = -2.5  # -2
 # шаг
 lam = 0.1  # 0.001 0.01
 # точность относительно минимизируюшей функции
-eps = 0.01
+eps = 0.0001
 # print("итерации", Grad1(0.1, -2.5, -2.5, 0.1))
-#print(Grad2Prop(eps, x_0, y_0, 0.1, 0.5))
+print(Grad2Prop(eps, x_0, y_0, 0.1, 0.5))
 
 
