@@ -28,7 +28,7 @@ while  etta >= eps:
                 [-1,  -1], #-x-y <=5
     ]
 
-    rhs_ineq = [2,2,5]
+    rhs_ineq = [2,2,1.6]
 
     bnd = [(-float("inf"), 0),  # Границы x
            (-float("inf"),1)]  # Границы y
