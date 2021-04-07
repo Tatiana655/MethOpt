@@ -25,7 +25,7 @@ while  etta >= eps:
     obj = gradf(x_k)
     lhs_ineq = [[-1,   1], #-x+y<=2
                 [0.5, -1], #x/2-y<=2
-                [-1,  -1], #-x-y <=5
+                [-1,  -1], #-x-y <=1.6
     ]
 
     rhs_ineq = [2,2,1.6]
