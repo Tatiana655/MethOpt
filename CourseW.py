@@ -3,17 +3,11 @@ from scipy.optimize import minimize
 
 
 def f(x):
-    #return (x[0] ** 2 +  x[1] ** 2 + np.sin(2 * x[0] + 3 * x[1]) + 3 * x[0] + 2 * x[1])
-    return max((x[0]+1) ** 2 + 5 * x[1] ** 2, (x[0]-1) ** 2 +5*x[1] ** 2)
+    return (x[0] ** 2 +  x[1] ** 2 + np.sin(2 * x[0] + 3 * x[1]) + 3 * x[0] + 2 * x[1])
+    #return max((x[0]+1) ** 2 + 5 * x[1] ** 2, (x[0]-1) ** 2 +5*x[1] ** 2)
 def gradf(x):
-    f1 = (x[0]+1) ** 2 + 5 * x[1] ** 2
-    f2 = (x[0]-1) ** 2 + 5 * x[1] ** 2
-    if f1>f2:
-        return np.array([2 * (x[0] + 1), 10 * x[1]])
-    else:
-        return np.array([2 * (x[0] - 1), 10 * x[1]])
-    #return np.array([3 + 2 * x[0] + 2 * np.cos(2 * x[0] + 3 * x[1]),
-    #                  2 + 2 * x[1] + 3 * np.cos(2 * x[0] + 3 * x[1])])
+    return np.array([3 + 2 * x[0] + 2 * np.cos(2 * x[0] + 3 * x[1]),
+                      2 + 2 * x[1] + 3 * np.cos(2 * x[0] + 3 * x[1])])
 
 def H(x):
     return
@@ -137,17 +131,20 @@ def fibb(f,a,b,eps):
         k += 1
     return (bk+ak)/2
 
-def find_alf(f, x,):
+def find_alf(f, gradf, x, param):
     delt = 0.5
     b = delt
     a = 0
-    while f(x + a) < f(x + b):
+    while f(x + a * gradf(x)) > f(x + b * gradf(x)):
         a += delt
         b += delt
-    alpha = dih(lambda y: f(x + y * p), a, b, eps)
+    if param == 1:
+        alpha = dih(lambda y: f(x + y * gradf(x)), a, b, eps)
+    else:
+        alpha = fibb(lambda y: f(x + y * gradf(x)), a, b, eps)
+    return alpha
 
-def FirstGrad(f, grad, x0, eps, alpha):
-
+def FirstGrad(f, grad, x0, eps, find_alf,param):
     normGrad = 3
     x = x0
     count = 0
@@ -155,25 +152,31 @@ def FirstGrad(f, grad, x0, eps, alpha):
     vec.append(x)
     while normGrad >= eps:
         count += 1
-        step = find_alf()
-        x = x - alpha * grad(x)
-        print(x)
+        step = find_alf(f,grad,x,param)
+        x = x - step * grad(x)
+        #print(x)
         #H_x = H(x)
         #w, v = np.linalg.eigh(H_x)
         #print("Собственные числа", w)
         normGrad = np.linalg.norm(grad(x), ord=2)
         vec.append(x)
     print("итерации", count)
-    print("x_k-1 = ", vec[len(vec) - 2])
+    #print("x_k-1 = ", vec[len(vec) - 2])
     x = np.round(np.array(x), 4)
     return x
 
 if __name__ == "__main__":
     x_1= 5
-    x0 = [x_1, (x_1 - 1)** 2]#5*x_1**2]
+    x0 = np.array([-1, 0])#5*x_1**2]
     eps = 0.1
-    print(FirstGrad(f, gradf, x0, eps, 0.5))
+    for i in range(3):
+        print("eps =", eps)
+        print("Fib = ",FirstGrad(f,gradf,x0,eps, find_alf,1))
+        print("Dih = ",FirstGrad(f, gradf, x0, eps, find_alf,0))
 
+        eps /=10
+    sol = minimize(f, x0, method='Nelder-Mead', tol=10 ** -10).x
+    print("Sol =",sol)
 
     '''x0 = [-1, 0]
     eps = 0.1
